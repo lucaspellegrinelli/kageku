@@ -47,9 +47,6 @@ class Kageku:
       move_str = self.int_pos_to_text_pos(move[0]) + self.int_pos_to_text_pos(move[1])
       actions.append(Action(0, color, move_str))
 
-    a = [i.details for i in actions if i.type == 1]
-    a.sort()
-    print(a, len(a))
     return actions
 
   def get_player_mana(self, player_pieces, color=None):
@@ -59,7 +56,7 @@ class Kageku:
     has_own_field_pawn = False
     opp_field_pawn_count = 0
     for pos, piece in player_pieces.items():
-      if piece[0] == PAWN:
+      if piece == PAWN:
         if (pos[0] < 4 and color == WHITE) or (pos[0] >= 4 and color == BLACK):
           opp_field_pawn_count += 1
         elif not has_own_field_pawn:
