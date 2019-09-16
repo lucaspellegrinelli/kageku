@@ -18,14 +18,6 @@ class Kageku:
         self.piece_count[piece] += 1
 
   def create_initial_board(self):
-    # k . r . . . . .
-    # p p p . . . . .
-    # . . . . . . . .
-    # . . . . . . . .
-    # . . . . . . . .
-    # . . . . . . . .
-    # . . . . . P P P
-    # . . . . . R . K
     return [
       [(KING, BLACK), NONE_PIECE, (ROOK, BLACK), NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE],
       [(PAWN, BLACK), (PAWN, BLACK), (PAWN, BLACK), NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE],
@@ -58,11 +50,11 @@ class Kageku:
     movements = self.get_pieces_movements(player_pieces, color)
 
     for add in all_adds:
-      actions.append(Action(color, add))
+      actions.append(Action(add, color))
 
     for move in movements:
       move_str = self.int_pos_to_text_pos(move[0]) + self.int_pos_to_text_pos(move[1])
-      actions.append(Action(color, move_str))
+      actions.append(Action(move_str, color))
 
     return actions
 
@@ -201,14 +193,14 @@ class Kageku:
     return addable_positions
 
   def apply_action(self, action):
-    if action.type == 0:
+    if action.type == MOVE_ACTION:
       from_pos = self.text_pos_to_int_pos(action.details[0:2])
       to_pos = self.text_pos_to_int_pos(action.details[2:4])
       self.piece_count[NONE_PIECE] += 1
       self.piece_count[self.get_piece_at(to_pos)] -= 1
       self.set_piece_at(to_pos, self.get_piece_at(from_pos))
       self.set_piece_at(from_pos, NONE_PIECE)
-    elif action.type == 1:
+    elif action.type == ADD_ACTION:
       adds = action.unpack_add_action_details()
       for add in adds:
         pos = self.text_pos_to_int_pos(add[0:2])
@@ -222,14 +214,14 @@ class Kageku:
 
   def undo_last_action(self):
     action = self.actions.pop()
-    if action.type == 0:
+    if action.type == MOVE_ACTION:
       from_pos = self.text_pos_to_int_pos(action.details[0:2])
       to_pos = self.text_pos_to_int_pos(action.details[2:4])
       self.piece_count[NONE_PIECE] -= 1
       self.piece_count[self.get_piece_at(to_pos)] += 1
       self.set_piece_at(from_pos, self.get_piece_at(to_pos))
       self.set_piece_at(to_pos, NONE_PIECE)
-    else:
+    elif action.type == ADD_ACTION:
       adds = action.unpack_add_action_details()
       for add in adds:
         pos = self.text_pos_to_int_pos(add[0:2])
