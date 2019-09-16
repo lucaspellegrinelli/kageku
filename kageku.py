@@ -1,4 +1,5 @@
 from flags import *
+from consts import *
 from action import *
 
 class Kageku:
@@ -16,7 +17,7 @@ class Kageku:
       [(NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR)],
       [(NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR)],
       [(NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (PAWN, WHITE), (PAWN, WHITE), (PAWN, WHITE)],
-      [(NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (QUEEN, WHITE), (ROOK, WHITE), (NO_PIECE, NO_COLOR), (KING, WHITE)]
+      [(NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (ROOK, WHITE), (NO_PIECE, NO_COLOR), (KING, WHITE)]
     ]
 
   def available_actions(self, color=None):
@@ -34,17 +35,73 @@ class Kageku:
             player_king_pos = (l, c)
 
     addable_positions = self.get_addable_positions(player_king_pos, color)
+    mana = self.get_player_mana(player_pieces, color)
+    all_adds = self.create_all_adds(addable_positions, mana, color)
+
     movements = self.get_pieces_movements(player_pieces, color)
 
-    for add in addable_positions:
-      add_str = self.int_pos_to_text_pos(add) + "p"
-      actions.append(Action(1, color, add_str))
+    for add in all_adds:
+      actions.append(Action(1, color, add))
 
     for move in movements:
       move_str = self.int_pos_to_text_pos(move[0]) + self.int_pos_to_text_pos(move[1])
       actions.append(Action(0, color, move_str))
 
+    a = [i.details for i in actions if i.type == 1]
+    a.sort()
+    print(a, len(a))
     return actions
+
+  def get_player_mana(self, player_pieces, color=None):
+    if color is None:
+      color = self.turn
+
+    has_own_field_pawn = False
+    opp_field_pawn_count = 0
+    for pos, piece in player_pieces.items():
+      if piece[0] == PAWN:
+        if (pos[0] < 4 and color == WHITE) or (pos[0] >= 4 and color == BLACK):
+          opp_field_pawn_count += 1
+        elif not has_own_field_pawn:
+          has_own_field_pawn = True
+
+    return opp_field_pawn_count + (1 if has_own_field_pawn else 0)
+
+  def create_all_adds(self, addable_positions, mana, color=None):
+    if color is None:
+      color = self.turn
+
+    NO_ADD = "---"
+
+    all_adds = []
+    for pos in addable_positions:
+      if (pos[0] < 4 and color == WHITE) or (pos[0] >= 4 and color == BLACK):
+        continue
+
+      curr_adds = []
+      pos_repr = self.int_pos_to_text_pos(pos)
+      if len(all_adds) == 0:
+        all_adds = [NO_ADD]
+        for piece, cost in PIECES_COST.items():
+          if cost <= mana:
+            new_line = pos_repr + piece
+            all_adds.append(new_line)
+      else:
+        for line in all_adds:
+          curr_mana = mana
+          for i in range(0, len(line), 3):
+            add_action = line[i: i + 3]
+            if add_action != NO_ADD:
+              curr_mana -= PIECES_COST[add_action[-1]]
+
+          curr_adds.append(line[:] + NO_ADD)
+          for piece, cost in PIECES_COST.items():
+            if cost <= curr_mana:
+              curr_adds.append(line[:] + pos_repr + piece)
+
+        all_adds = curr_adds[:]
+
+    return [i.replace(NO_ADD, "") for i in all_adds if len(i.replace(NO_ADD, "")) > 0]
 
   def get_pieces_movements(self, player_pieces, color=None):
     if color is None:
