@@ -9,15 +9,23 @@ class Kageku:
     self.turn = WHITE
 
   def create_initial_board(self):
+    # k . r . . . . .
+    # p p p . . . . .
+    # . . . . . . . .
+    # . . . . . . . .
+    # . . . . . . . .
+    # . . . . . . . .
+    # . . . . . P P P
+    # . . . . . R . K
     return [
-      [(KING, BLACK), (NO_PIECE, NO_COLOR), (ROOK, BLACK), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR)],
-      [(PAWN, BLACK), (PAWN, BLACK), (PAWN, BLACK), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR)],
-      [(NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR)],
-      [(NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR)],
-      [(NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR)],
-      [(NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR)],
-      [(NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (PAWN, WHITE), (PAWN, WHITE), (PAWN, WHITE)],
-      [(NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (ROOK, WHITE), (NO_PIECE, NO_COLOR), (KING, WHITE)]
+      [(KING, BLACK), NONE_PIECE, (ROOK, BLACK), NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE],
+      [(PAWN, BLACK), (PAWN, BLACK), (PAWN, BLACK), NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE],
+      [NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE],
+      [NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE],
+      [NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE],
+      [NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE],
+      [NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE, (PAWN, WHITE), (PAWN, WHITE), (PAWN, WHITE)],
+      [NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE, NONE_PIECE, (ROOK, WHITE), NONE_PIECE, (KING, WHITE)]
     ]
 
   def available_actions(self, color=None):
@@ -205,12 +213,12 @@ class Kageku:
       from_pos = self.text_pos_to_int_pos(action.details[0:2])
       to_pos = self.text_pos_to_int_pos(action.details[2:4])
       self.set_piece_at(from_pos, self.get_piece_at(to_pos))
-      self.set_piece_at(to_pos, (NO_PIECE, NO_COLOR))
+      self.set_piece_at(to_pos, NONE_PIECE)
     else:
       adds = action.unpack_add_action_details()
       for add in adds:
         pos = self.text_pos_to_int_pos(add[0:2])
-        self.set_piece_at(pos, (NO_PIECE, NO_COLOR))
+        self.set_piece_at(pos, NONE_PIECE)
 
     self.change_turn()
 
