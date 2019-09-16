@@ -238,6 +238,15 @@ class Kageku:
   def both_kings_alive(self):
     return self.piece_count[(KING, WHITE)] > 0 and self.piece_count[(KING, BLACK)] > 0
 
+  def get_winner(self):
+    if not self.is_game_over():
+      return NO_COLOR
+    else:
+      if self.piece_count[(KING, BLACK)] == 0 or (PAWN, WHITE) in self.board[0]:
+        return WHITE
+      else:
+        return BLACK
+
   def get_piece_at(self, pos):
     return self.board[pos[0]][pos[1]]
 

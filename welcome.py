@@ -15,9 +15,11 @@ while not game.is_game_over():
   actions = game.available_actions()
   action = random.choice(actions)
 
-  game.apply_action(action)
-
   print(("White" if game.turn == WHITE else "Black") + "'s move:", action)
+
+  game.apply_action(action)
   print(game)
-  
+
   turn += 1
+
+print("The winner is the", ("White" if game.get_winner() == WHITE else "Black"), "player")
