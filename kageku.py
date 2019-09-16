@@ -16,7 +16,7 @@ class Kageku:
       [(NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR)],
       [(NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR)],
       [(NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (PAWN, WHITE), (PAWN, WHITE), (PAWN, WHITE)],
-      [(NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (ROOK, WHITE), (NO_PIECE, NO_COLOR), (KING, WHITE)]
+      [(NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (NO_PIECE, NO_COLOR), (QUEEN, WHITE), (ROOK, WHITE), (NO_PIECE, NO_COLOR), (KING, WHITE)]
     ]
 
   def available_actions(self, color=None):
@@ -62,47 +62,49 @@ class Kageku:
 
         for eat in eat_pos:
           if self.is_valid_position(eat):
-            eat_piece = self.get_piece_at(eat_left_pos)
+            eat_piece = self.get_piece_at(eat)
             if not eat_piece == NONE_PIECE and eat_piece[1] != color:
               moves.append((pos, eat))
 
       elif piece == ROOK or piece == BISHOP or piece == QUEEN:
-        dirs_pos_left = [7] * (8 if piece == QUEEN else 4)
+        dirs = []
+
+        if piece == ROOK:
+          dirs = [(1, 0), (0, 1), (-1, 0), (0, -1)]
+        elif piece == BISHOP:
+          dirs = [(1, 1), (1, -1), (-1, 1), (-1, -1)]
+        elif piece == QUEEN:
+          dirs = [(1, 1), (1, 0), (1, -1), (0, 1), (0, -1), (-1, 1), (-1, 0), (-1, -1)]
+
+        dirs_pos_searching = [True] * len(dirs)
         incr = 0
-        while sum(dirs_pos_left) > 0:
+        while sum(dirs_pos_searching) > 0:
           incr += 1
-          offsets = []
-
-          for r, c in [(1, 1), (1, 0), (1, -1), (0, 1), (0, -1), (-1, 1), (-1, 0), (1, 0)]:
-              if (piece == ROOK and r == 0 or c == 0) or (piece == BISHOP and r != 0 and c != 0) or piece == QUEEN:
-                offsets.append((pos[0] + i * incr, pos[1] + j * incr))
-
+          offsets = [(pos[0] + dir[0] * incr, pos[1] + dir[1] * incr) for dir in dirs]
           for npi, new_pos in enumerate(offsets):
-            if self.is_valid_position(new_pos) and dirs_pos_left[npi] > 0:
+            if self.is_valid_position(new_pos) and dirs_pos_searching[npi]:
               piece_at = self.get_piece_at(new_pos)
-              if piece_at == NONE_PIECE:
-                dirs_pos_left[npi] -= 1
+              if piece_at == NONE_PIECE or piece_at[1] != color:
                 moves.append((pos, new_pos))
-              elif piece_at[1] == color:
-                dirs_pos_left[npi] = 0
-              elif piece_at[1] != color:
-                dirs_pos_left[npi] = 0
-                moves.append((pos, new_pos))
+              if piece_at != NONE_PIECE:
+                dirs_pos_searching[npi] = False
             else:
-              dirs_pos_left[npi] = 0
+              dirs_pos_searching[npi] = False
 
       elif piece == KNIGHT or piece == KING:
         offsets = []
-        
+
         if piece == KNIGHT:
           offsets = [(2, 1), (2, -1), (1, 2), (1, -2), (-1, 2), (-1, -2), (-2, 1), (-2, -1)]
         elif piece == KING:
-          offsets = [(1, 1), (1, 0), (1, -1), (0, 1), (0, -1), (-1, 1), (-1, 0), (1, 0)]
+          offsets = [(1, 1), (1, 0), (1, -1), (0, 1), (0, -1), (-1, 1), (-1, 0), (-1, -1)]
 
         for offset in offsets:
           new_pos = (pos[0] + offset[0], pos[1] + offset[1])
           if self.is_valid_position(new_pos):
-            moves.append(pos, new_pos)
+            piece_at = self.get_piece_at(new_pos)
+            if piece_at[1] != color:
+              moves.append((pos, new_pos))
 
     return moves
 
