@@ -1,8 +1,8 @@
 from flags import *
 
 class Action:
-  def __init__(self, type, color, details):
-    self.type = type
+  def __init__(self, color, details):
+    self.type = 0 if len(details) == 4 else 1
     self.color = color
     self.details = details
 

@@ -20,7 +20,9 @@ The board starts with a different configuration (as shown below)
 **1**|-|-|-|-|-|R|-|K
 
 ### Winning
-To win, you must either checkmate your opponent or promote a pawn
+To win, you must either take your opponent's king (yes, no checkmate) or promote a pawn.
+
+The ideia behind not having the obligation to checkmate to win is both to be more simple to people who aren't used to playing chess and potentially speeding up the games.
 
 ### "Mana"
 In the game we have a system that resembles a mana system that caps your plays in your turn. The use of it is stated below.

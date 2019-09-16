@@ -9,6 +9,10 @@ print("Starting board")
 print(game)
 
 for i in range(10):
+  if game.is_game_over():
+    break
+
+  print(game.piece_count)
   print("---- Turn", i // 2 + 1, "----")
   actions = game.available_actions()
   action = random.choice(actions)

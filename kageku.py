@@ -8,6 +8,15 @@ class Kageku:
     self.actions = []
     self.turn = WHITE
 
+    self.piece_count = {NONE_PIECE: 0}
+    for piece in [KING, QUEEN, ROOK, BISHOP, KNIGHT, PAWN]:
+      for team in [WHITE, BLACK]:
+        self.piece_count[(piece, team)] = 0
+
+    for row in self.board:
+      for piece in row:
+        self.piece_count[piece] += 1
+
   def create_initial_board(self):
     # k . r . . . . .
     # p p p . . . . .
@@ -49,11 +58,11 @@ class Kageku:
     movements = self.get_pieces_movements(player_pieces, color)
 
     for add in all_adds:
-      actions.append(Action(1, color, add))
+      actions.append(Action(color, add))
 
     for move in movements:
       move_str = self.int_pos_to_text_pos(move[0]) + self.int_pos_to_text_pos(move[1])
-      actions.append(Action(0, color, move_str))
+      actions.append(Action(color, move_str))
 
     return actions
 
@@ -88,7 +97,7 @@ class Kageku:
       if len(all_adds) == 0:
         all_adds = [NO_ADD]
         for piece, cost in PIECES_COST.items():
-          if cost <= mana:
+          if cost <= mana and self.piece_count[(PIECE_TEXT_TO_ID[piece], color)] < PIECES_MAX[piece]:
             new_line = pos_repr + piece
             all_adds.append(new_line)
       else:
@@ -101,7 +110,7 @@ class Kageku:
 
           curr_adds.append(line[:] + NO_ADD)
           for piece, cost in PIECES_COST.items():
-            if cost <= curr_mana:
+            if cost <= curr_mana and self.piece_count[(PIECE_TEXT_TO_ID[piece], color)] < PIECES_MAX[piece]:
               curr_adds.append(line[:] + pos_repr + piece)
 
         all_adds = curr_adds[:]
@@ -195,6 +204,8 @@ class Kageku:
     if action.type == 0:
       from_pos = self.text_pos_to_int_pos(action.details[0:2])
       to_pos = self.text_pos_to_int_pos(action.details[2:4])
+      self.piece_count[NONE_PIECE] += 1
+      self.piece_count[self.get_piece_at(to_pos)] -= 1
       self.set_piece_at(to_pos, self.get_piece_at(from_pos))
       self.set_piece_at(from_pos, NONE_PIECE)
     elif action.type == 1:
@@ -203,6 +214,8 @@ class Kageku:
         pos = self.text_pos_to_int_pos(add[0:2])
         piece = PIECE_TEXT_TO_ID[add[2].lower()]
         self.set_piece_at(pos, (piece, action.color))
+        self.piece_count[NONE_PIECE] -= 1
+        self.piece_count[(piece, action.color)] += 1
 
     self.actions.append(action)
     self.change_turn()
@@ -212,22 +225,26 @@ class Kageku:
     if action.type == 0:
       from_pos = self.text_pos_to_int_pos(action.details[0:2])
       to_pos = self.text_pos_to_int_pos(action.details[2:4])
+      self.piece_count[NONE_PIECE] -= 1
+      self.piece_count[self.get_piece_at(to_pos)] += 1
       self.set_piece_at(from_pos, self.get_piece_at(to_pos))
       self.set_piece_at(to_pos, NONE_PIECE)
     else:
       adds = action.unpack_add_action_details()
       for add in adds:
         pos = self.text_pos_to_int_pos(add[0:2])
+        piece = PIECE_TEXT_TO_ID[add[2].lower()]
         self.set_piece_at(pos, NONE_PIECE)
+        self.piece_count[NONE_PIECE] += 1
+        self.piece_count[(piece, action.color)] -= 1
 
     self.change_turn()
 
   def is_game_over(self):
-    return (PAWN, WHITE) in self.board[0] or (PAWN, BLACK) in self.board[-1] or self.is_checkmate()
+    return (PAWN, WHITE) in self.board[0] or (PAWN, BLACK) in self.board[-1] or not self.both_kings_alive()
 
-  def is_checkmate(self):
-    # TODO
-    return False
+  def both_kings_alive(self):
+    return self.piece_count[(KING, WHITE)] > 0 and self.piece_count[(KING, BLACK)] > 0
 
   def get_piece_at(self, pos):
     return self.board[pos[0]][pos[1]]
