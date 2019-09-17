@@ -1,4 +1,4 @@
-# Kageku AI
+# Kageku
 
 ## What "Kageku" is?
 "Kageku" is a game created in one night to be one of the side games me and my friends can play inside our RPG to obtain resources inside it if we play well.
@@ -42,10 +42,6 @@ You cannot have more than 8 pawns, 2 knights, 2 bishops, 2 rooks and 1 queen.
 
 ### Other details
 - You cannot move the pawns two squares up in the first move like you do in chess
-
-## Why making an AI for it?
-
-The main ideia is simply to check if the game is fair for white and black. But Im always hyped for these kinds of project, so for me its a lot of fun also.
 
 ## Requirements
 
