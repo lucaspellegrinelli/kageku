@@ -43,6 +43,12 @@ You cannot have more than 8 pawns, 2 knights, 2 bishops, 2 rooks and 1 queen.
 ### Other details
 - You cannot move the pawns two squares up in the first move like you do in chess
 
+## Installation
+
+To install this package you can use ```pip``` like:
+
+```pip install kageku```
+
 ## Requirements
 
 You'll need Python to run this project (I'm using Python 3.6.8, I don't know if everything works in a different version). No special package is required!
