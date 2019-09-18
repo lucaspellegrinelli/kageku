@@ -15,4 +15,4 @@ class Action:
     return all_adds
 
   def __repr__(self):
-    return ("add" if self.type == ADD_ACTION else "move") + " " + str(self.details)
+    return str(self.details)
