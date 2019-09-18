@@ -6,6 +6,7 @@ class Board:
   def __init__(self):
     self.board = self.create_initial_board()
     self.actions = []
+    self.piece_taken_last_move = []
     self.turn = WHITE
 
     self.piece_count = {NONE_PIECE: 0}
@@ -196,6 +197,7 @@ class Board:
     if action.type == MOVE_ACTION:
       from_pos = self.text_pos_to_int_pos(action.details[0:2])
       to_pos = self.text_pos_to_int_pos(action.details[2:4])
+      self.piece_taken_last_move.append(self.get_piece_at(to_pos))
       self.piece_count[NONE_PIECE] += 1
       self.piece_count[self.get_piece_at(to_pos)] -= 1
       self.set_piece_at(to_pos, self.get_piece_at(from_pos))
@@ -213,24 +215,26 @@ class Board:
     self.change_turn()
 
   def undo_last_action(self):
-    action = self.actions.pop()
-    if action.type == MOVE_ACTION:
-      from_pos = self.text_pos_to_int_pos(action.details[0:2])
-      to_pos = self.text_pos_to_int_pos(action.details[2:4])
-      self.piece_count[NONE_PIECE] -= 1
-      self.piece_count[self.get_piece_at(to_pos)] += 1
-      self.set_piece_at(from_pos, self.get_piece_at(to_pos))
-      self.set_piece_at(to_pos, NONE_PIECE)
-    elif action.type == ADD_ACTION:
-      adds = action.unpack_add_action_details()
-      for add in adds:
-        pos = self.text_pos_to_int_pos(add[0:2])
-        piece = PIECE_TEXT_TO_ID[add[2].lower()]
-        self.set_piece_at(pos, NONE_PIECE)
-        self.piece_count[NONE_PIECE] += 1
-        self.piece_count[(piece, action.color)] -= 1
+    if(len(self.actions) > 0):
+      action = self.actions.pop()
+      if action.type == MOVE_ACTION:
+        from_pos = self.text_pos_to_int_pos(action.details[0:2])
+        to_pos = self.text_pos_to_int_pos(action.details[2:4])
+        piece_taken_by_move = self.piece_taken_last_move.pop()
+        self.piece_count[NONE_PIECE] -= 1
+        self.piece_count[piece_taken_by_move] += 1
+        self.set_piece_at(from_pos, self.get_piece_at(to_pos))
+        self.set_piece_at(to_pos, piece_taken_by_move)
+      elif action.type == ADD_ACTION:
+        adds = action.unpack_add_action_details()
+        for add in adds:
+          pos = self.text_pos_to_int_pos(add[0:2])
+          piece = PIECE_TEXT_TO_ID[add[2].lower()]
+          self.set_piece_at(pos, NONE_PIECE)
+          self.piece_count[NONE_PIECE] += 1
+          self.piece_count[(piece, action.color)] -= 1
 
-    self.change_turn()
+      self.change_turn()
 
   def is_game_over(self):
     return (PAWN, WHITE) in self.board[0] or (PAWN, BLACK) in self.board[-1] or not self.both_kings_alive()
