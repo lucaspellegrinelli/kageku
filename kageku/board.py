@@ -1,8 +1,8 @@
-from flags import *
-from consts import *
-from action import *
+from kageku.flags import *
+from kageku.consts import *
+from kageku.action import *
 
-class Kageku:
+class Board:
   def __init__(self):
     self.board = self.create_initial_board()
     self.actions = []

@@ -1,9 +1,7 @@
 import random
+import kageku
 
-from flags import *
-from kageku import *
-
-game = Kageku()
+game = kageku.Board()
 
 print("Starting board")
 print(game)
@@ -15,11 +13,11 @@ while not game.is_game_over():
   actions = game.available_actions()
   action = random.choice(actions)
 
-  print(("White" if game.turn == WHITE else "Black") + "'s move:", action)
+  print(("White" if game.turn == kageku.WHITE else "Black") + "'s move:", action)
 
   game.apply_action(action)
   print(game)
 
   turn += 1
 
-print("The winner is the", ("White" if game.get_winner() == WHITE else "Black"), "player")
+print("The winner is the", ("White" if game.get_winner() == kageku.WHITE else "Black"), "player")

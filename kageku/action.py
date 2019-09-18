@@ -1,4 +1,4 @@
-from flags import *
+from kageku.flags import *
 
 class Action:
   def __init__(self, details, color):
