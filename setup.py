@@ -5,7 +5,7 @@ with open('README.md') as f:
 
 setup(
   name='Kageku',
-  version='1.1.1',
+  version='1.1.2',
   url='https://github.com/lucaspellegrinelli/kageku',
   license='MIT License',
   author='Lucas Pellegrinelli',

@@ -89,9 +89,11 @@ class Board:
       pos_repr = self.int_pos_to_text_pos(pos)
       if len(all_adds) == 0:
         all_adds = [NO_ADD]
+        curr_piece_count = self.piece_count.copy()
         for piece, cost in PIECES_COST.items():
-          if cost <= mana and self.piece_count[(PIECE_TEXT_TO_ID[piece], color)] < PIECES_MAX[piece]:
+          if cost <= mana and curr_piece_count[(PIECE_TEXT_TO_ID[piece], color)] < PIECES_MAX[piece]:
             new_line = pos_repr + piece
+            curr_piece_count[(PIECE_TEXT_TO_ID[piece], color)] += 1
             all_adds.append(new_line)
       else:
         for line in all_adds:
@@ -102,9 +104,11 @@ class Board:
               curr_mana -= PIECES_COST[add_action[-1]]
 
           curr_adds.append(line[:] + NO_ADD)
+          curr_piece_count = self.piece_count.copy()
           for piece, cost in PIECES_COST.items():
-            if cost <= curr_mana and self.piece_count[(PIECE_TEXT_TO_ID[piece], color)] < PIECES_MAX[piece]:
+            if cost <= curr_mana and curr_piece_count[(PIECE_TEXT_TO_ID[piece], color)] < PIECES_MAX[piece]:
               curr_adds.append(line[:] + pos_repr + piece)
+              curr_piece_count[(PIECE_TEXT_TO_ID[piece], color)] += 1
 
         all_adds = curr_adds[:]
 
